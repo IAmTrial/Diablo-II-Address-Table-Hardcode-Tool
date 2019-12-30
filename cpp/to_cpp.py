@@ -1,3 +1,5 @@
+import csv
+import json
 import os
 import sys
 
@@ -6,6 +8,7 @@ def main():
         print("Missing address directory.")
         exit()
 
+    # Determine if the supplied address files are valid.
     address_dir_name = sys.argv[1]
     print(f"Converting {address_dir_name} to C++ file...")
 
@@ -24,8 +27,43 @@ def main():
         if file.endswith(".txt"):
             address_files.append(file)
 
+    # Convert the files into address table info.
+    game_address_table_text = "{"
+
     print("Converting the following files:")
     print(address_files)
+
+    for address_file_path in address_files:
+        address_file_lines = []
+        with open(os.path.join(address_dir_name, address_file_path), "r") as address_file:
+            reader = csv.reader(address_file, delimiter='\t')
+            address_file_lines = [line for line in reader]
+
+        address_file_lines = address_file_lines[1:]
+
+        converted_address_file_text = ""
+        for line in address_file_lines:
+            library_path = line[0]
+            address_name = line[1]
+            locator_type = line[2]
+            locator_value = line[3]
+
+            converted_address_file_text += f"{{ \"{library_path[:-4]}_{address_name}\", GameAddress::From{locator_type}(\"{library_path}\", \"{locator_value}\")\n }},\n"
+
+        address_file_text = f"{{\n\"{address_file_path}\", {{\n{converted_address_file_text}\n}}\n }},"
+        game_address_table_text += address_file_text
+
+    game_address_table_text += "}"
+
+    # Output the file.
+    template_text = ""
+    with open("./game_address_table_template.hpp", "r") as game_address_table_template:
+        template_text = "".join(game_address_table_template.readlines())
+
+    output_text = template_text.replace("ALL_ADDRESS_TABLE", game_address_table_text)
+
+    with open("./game_address_table.hpp", "w") as game_address_table_output:
+        game_address_table_output.write(output_text)
 
 if __name__ == "__main__":
     main()
