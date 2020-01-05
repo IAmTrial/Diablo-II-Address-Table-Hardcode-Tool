@@ -27,17 +27,135 @@ namespace {
 std::unordered_map<std::string_view, GameAddress>
 GetRunningGameVersionAddressTable() {
   // Format marking!!!
-  const std::unordered_map<
-      std::string_view,
-      std::unordered_map<std::string_view, GameAddress>
-  > all_address_table = {
-      ALL_ADDRESS_TABLE
-  };
+  switch (d2::GetRunningGameVersionId()) {
+    case d2::GameVersion::k1_00: {
+      return ADDRESS_TABLE_1_00;
+    }
 
-  std::string_view running_game_version_name =
-      d2::GetRunningGameVersionName();
+    case d2::GameVersion::k1_01: {
+      return ADDRESS_TABLE_1_01;
+    }
 
-  return all_address_table.at(running_game_version_name);
+    case d2::GameVersion::k1_02: {
+      return ADDRESS_TABLE_1_02;
+    }
+
+    case d2::GameVersion::k1_03: {
+      return ADDRESS_TABLE_1_03;
+    }
+
+    case d2::GameVersion::k1_04B_C: {
+      return ADDRESS_TABLE_1_04B_AND_C;
+    }
+
+    case d2::GameVersion::k1_05: {
+      return ADDRESS_TABLE_1_05;
+    }
+
+    case d2::GameVersion::k1_05B: {
+      return ADDRESS_TABLE_1_05B;
+    }
+
+    case d2::GameVersion::k1_06: {
+      return ADDRESS_TABLE_1_06;
+    }
+
+    case d2::GameVersion::k1_06B: {
+      return ADDRESS_TABLE_1_06B;
+    }
+
+    case d2::GameVersion::k1_07Beta: {
+      return ADDRESS_TABLE_1_07_BETA;
+    }
+
+    case d2::GameVersion::k1_07: {
+      return ADDRESS_TABLE_1_07;
+    }
+
+    case d2::GameVersion::k1_08: {
+      return ADDRESS_TABLE_1_08;
+    }
+
+    case d2::GameVersion::k1_09: {
+      return ADDRESS_TABLE_1_09;
+    }
+
+    case d2::GameVersion::k1_09B: {
+      return ADDRESS_TABLE_1_09B;
+    }
+
+    case d2::GameVersion::k1_09D: {
+      return ADDRESS_TABLE_1_09D;
+    }
+
+    case d2::GameVersion::k1_10Beta: {
+      return ADDRESS_TABLE_1_10_BETA;
+    }
+
+    case d2::GameVersion::k1_10SBeta: {
+      return ADDRESS_TABLE_1_10S_BETA;
+    }
+
+    case d2::GameVersion::k1_10: {
+      return ADDRESS_TABLE_1_10;
+    }
+
+    case d2::GameVersion::k1_11: {
+      return ADDRESS_TABLE_1_11;
+    }
+
+    case d2::GameVersion::k1_11B: {
+      return ADDRESS_TABLE_1_11B;
+    }
+
+    case d2::GameVersion::k1_12A: {
+      return ADDRESS_TABLE_1_12A;
+    }
+
+    case d2::GameVersion::k1_13ABeta: {
+      return ADDRESS_TABLE_1_13A_BETA;
+    }
+
+    case d2::GameVersion::k1_13C: {
+      return ADDRESS_TABLE_1_13C;
+    }
+
+    case d2::GameVersion::k1_13D: {
+      return ADDRESS_TABLE_1_13D;
+    }
+
+    case d2::GameVersion::kClassic1_14A: {
+      return ADDRESS_TABLE_CLASSIC_1_14A;
+    }
+
+    case d2::GameVersion::kLod1_14A: {
+      return ADDRESS_TABLE_LOD_1_14A;
+    }
+
+    case d2::GameVersion::kClassic1_14B: {
+      return ADDRESS_TABLE_CLASSIC_1_14B;
+    }
+
+    case d2::GameVersion::kLod1_14B: {
+      return ADDRESS_TABLE_LOD_1_14B;
+    }
+
+    case d2::GameVersion::kClassic1_14C: {
+      return ADDRESS_TABLE_CLASSIC_1_14C;
+    }
+
+    case d2::GameVersion::kLod1_14C: {
+      return ADDRESS_TABLE_LOD_1_14D;
+    }
+
+    case d2::GameVersion::kClassic1_14D: {
+      return ADDRESS_TABLE_CLASSIC_1_14D;
+    }
+
+    case d2::GameVersion::kLod1_14D: {
+      return ADDRESS_TABLE_LOD_1_14D;
+    }
+  }
 }
 
 const std::unordered_map<std::string_view, GameAddress>&

@@ -28,20 +28,20 @@ def main():
             address_files.append(file)
 
     # Convert the files into address table info.
-    game_address_table_text = "{"
+    game_address_table_dict = {}
 
     print("Converting the following files:")
     print(address_files)
 
     for address_file_path in address_files:
-        version_name = address_file_path[:-4]
+        version_name = address_file_path[:-4].replace(".", "_").replace(" ", "_").upper()
 
         address_file_lines = []
         with open(os.path.join(address_dir_name, address_file_path), "r") as address_file:
             reader = csv.reader(address_file, delimiter='\t')
             address_file_lines = [line for line in reader]
 
-        address_file_lines = address_file_lines[1:]
+        del address_file_lines[0]
 
         converted_address_file_text = ""
         for line in address_file_lines:
@@ -55,17 +55,22 @@ def main():
 
             converted_address_file_text += f"{{ \"{library_path[:-4]}_{address_name}\", GameAddress::From{locator_type}(\"{library_path}\", {locator_value})\n }},\n"
 
-        address_file_text = f"{{\n\"{version_name}\", {{\n{converted_address_file_text}\n}}\n }},"
-        game_address_table_text += address_file_text
-
-    game_address_table_text += "}"
+        address_file_text = f"{{\n{converted_address_file_text}\n}}\n"
+        game_address_table_dict[version_name] = address_file_text
 
     # Output the file.
-    template_text = ""
+    output_text = ""
     with open("./game_address_table_template.cc", "r") as game_address_table_template:
-        template_text = "".join(game_address_table_template.readlines())
+        output_text = "".join(game_address_table_template.readlines())
 
-    output_text = template_text.replace("ALL_ADDRESS_TABLE", game_address_table_text)
+    for version_name in game_address_table_dict:
+        output_text = output_text.replace(
+            "return ADDRESS_TABLE_{};".format(version_name),
+            "return {};".format(game_address_table_dict[version_name])
+        )
+
+    # Any unimplemented versions returns the empty map.
+    output_text = output_text.replace("return ADDRESS_TABLE_", "return {}; //")
 
     with open("./game_address_table.cc", "w") as game_address_table_output:
         game_address_table_output.write(output_text)
