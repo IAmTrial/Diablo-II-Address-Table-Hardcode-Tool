@@ -57,7 +57,7 @@ def main():
 
     # Output the file.
     template_text = ""
-    with open("./game_address_table_template.hpp", "r") as game_address_table_template:
+    with open("./game_address_table_template.cc", "r") as game_address_table_template:
         template_text = "".join(game_address_table_template.readlines())
 
     output_text = template_text.replace("ALL_ADDRESS_TABLE", game_address_table_text)
