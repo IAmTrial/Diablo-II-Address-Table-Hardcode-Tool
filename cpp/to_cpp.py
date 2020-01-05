@@ -50,6 +50,9 @@ def main():
             locator_type = line[2]
             locator_value = line[3]
 
+            if locator_type == "N/A":
+                continue
+
             converted_address_file_text += f"{{ \"{library_path[:-4]}_{address_name}\", GameAddress::From{locator_type}(\"{library_path}\", {locator_value})\n }},\n"
 
         address_file_text = f"{{\n\"{version_name}\", {{\n{converted_address_file_text}\n}}\n }},"
