@@ -34,6 +34,8 @@ def main():
     print(address_files)
 
     for address_file_path in address_files:
+        version_name = address_file_path[:-4]
+
         address_file_lines = []
         with open(os.path.join(address_dir_name, address_file_path), "r") as address_file:
             reader = csv.reader(address_file, delimiter='\t')
@@ -50,7 +52,7 @@ def main():
 
             converted_address_file_text += f"{{ \"{library_path[:-4]}_{address_name}\", GameAddress::From{locator_type}(\"{library_path}\", \"{locator_value}\")\n }},\n"
 
-        address_file_text = f"{{\n\"{address_file_path}\", {{\n{converted_address_file_text}\n}}\n }},"
+        address_file_text = f"{{\n\"{version_name}\", {{\n{converted_address_file_text}\n}}\n }},"
         game_address_table_text += address_file_text
 
     game_address_table_text += "}"
