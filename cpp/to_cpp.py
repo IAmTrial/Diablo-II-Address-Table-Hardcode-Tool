@@ -67,7 +67,7 @@ def main():
 
     output_text = template_text.replace("ALL_ADDRESS_TABLE", game_address_table_text)
 
-    with open("./game_address_table.hpp", "w") as game_address_table_output:
+    with open("./game_address_table.cc", "w") as game_address_table_output:
         game_address_table_output.write(output_text)
 
 if __name__ == "__main__":
