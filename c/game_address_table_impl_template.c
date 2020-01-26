@@ -1,5 +1,6 @@
 #include "game_address_table_impl.h"
 
+#include <stdlib.h>
 #include <windows.h>
 
 #include "../../../include/c/default_game_library.h"
