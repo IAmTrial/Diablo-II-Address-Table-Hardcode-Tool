@@ -3,6 +3,41 @@ import json
 import os
 import sys
 
+VERSIONS = [
+    "1_00",
+    "1_01",
+    "1_02",
+    "1_03",
+    "1_04B_AND_C",
+    "1_05",
+    "1_05B",
+    "1_06",
+    "1_06B",
+    "1_07_BETA",
+    "1_07",
+    "1_08",
+    "1_09",
+    "1_09B",
+    "1_09D",
+    "1_10_BETA",
+    "1_10S_BETA",
+    "1_10",
+    "1_11",
+    "1_11B",
+    "1_12A",
+    "1_13A_BETA",
+    "1_13C",
+    "1_13D",
+    "CLASSIC_1_14A",
+    "LOD_1_14A",
+    "CLASSIC_1_14B",
+    "LOD_1_14B",
+    "CLASSIC_1_14C",
+    "LOD_1_14C",
+    "CLASSIC_1_14D",
+    "LOD_1_14D"
+]
+
 def main():
     if len(sys.argv) < 2:
         print("Missing address directory.")
@@ -28,7 +63,7 @@ def main():
             address_files.append(file)
 
     # Convert the files into address table info.
-    game_address_table_dict = {}
+    game_address_table_dict = { v: "" for v in VERSIONS }
 
     print("Converting the following files:")
     print(address_files)
@@ -36,7 +71,6 @@ def main():
     for address_file_path in address_files:
         version_name = address_file_path[:-4].replace(".", "_").replace(" ", "_").upper()
 
-        address_file_lines = []
         with open(os.path.join(address_dir_name, address_file_path), "r") as address_file:
             reader = csv.reader(address_file, delimiter='\t')
             address_file_lines = [line for line in reader]
@@ -52,27 +86,34 @@ def main():
 
             if locator_type == "N/A":
                 continue
+            elif locator_type == "Offset":
+                locator_type_name = "GameOffsetLocator"
+            elif locator_type == "Ordinal":
+                locator_type_name = "GameOrdinalLocator"
+            elif locator_type == "Decorated Name":
+                locator_type_name = "GameDecoratedNameLocator"
+                locator_value = f"\"{locator_value}\""
 
-            converted_address_file_text += f"{{ \"{library_path[:-4]}_{address_name}\", GameAddress::From{locator_type}(\"{library_path}\", {locator_value})\n }},\n"
+            locator_value_var_id = f"{library_path[:-4]}_{address_name}_locator_value"
 
-        address_file_text = f"{{\n{converted_address_file_text}\n}}\n"
-        game_address_table_dict[version_name] = address_file_text
+            converted_address_file_text = "\\\n".join((converted_address_file_text,
+                f"game_address_table[\"{library_path}\"][\"{address_name}\"] = " +
+                    f"std::make_unique<{locator_type_name}>(\"{library_path}\", {locator_value});"
+            ))
+
+        game_address_table_dict[version_name] = f"{converted_address_file_text}"
 
     # Output the file.
     output_text = ""
     with open("./game_address_table_template.cc", "r") as game_address_table_template:
         output_text = "".join(game_address_table_template.readlines())
 
+    define_text = ""
     for version_name in game_address_table_dict:
-        output_text = output_text.replace(
-            "return ADDRESS_TABLE_{};".format(version_name),
-            "return {};".format(game_address_table_dict[version_name])
-        )
+        define_text += "#define ADDRESS_TABLE_{} {} \n".format(version_name, game_address_table_dict[version_name])
 
-    # Any unimplemented versions returns the empty map.
-    output_text = output_text.replace("return ADDRESS_TABLE_", "return {}; //")
-
-    with open("./game_address_table.cc", "w") as game_address_table_output:
+    with open("./game_address_table_impl.cc", "w") as game_address_table_output:
+        game_address_table_output.write(define_text)
         game_address_table_output.write(output_text)
 
 if __name__ == "__main__":
