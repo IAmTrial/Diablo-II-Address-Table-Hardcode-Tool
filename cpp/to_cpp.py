@@ -105,7 +105,7 @@ def main():
 
     # Output the file.
     output_text = ""
-    with open("./game_address_table_template.cc", "r") as game_address_table_template:
+    with open("./game_address_table_impl_template.cc", "r") as game_address_table_template:
         output_text = "".join(game_address_table_template.readlines())
 
     define_text = ""
