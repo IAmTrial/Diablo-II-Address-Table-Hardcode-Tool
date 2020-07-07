@@ -1,3 +1,5 @@
+#if !defined(SGMAPI_READ_ADDRESS_FROM_TXT_TABLE)
+
 #include "game_address_table_impl.hpp"
 
 #include <string_view>
@@ -147,3 +149,5 @@ GameAddressTable LoadGameAddressTable() {
 }
 
 } // namespace mapi
+
+#endif // !defined(SGMAPI_READ_ADDRESS_FROM_TXT_TABLE)
