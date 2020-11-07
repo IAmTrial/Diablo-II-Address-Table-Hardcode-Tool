@@ -35,7 +35,18 @@ VERSIONS = [
     "CLASSIC_1_14C",
     "LOD_1_14C",
     "CLASSIC_1_14D",
-    "LOD_1_14D"
+    "LOD_1_14D",
+]
+
+VERSION_1_14_UP = [
+    "CLASSIC_1_14A",
+    "LOD_1_14A",
+    "CLASSIC_1_14B",
+    "LOD_1_14B",
+    "CLASSIC_1_14C",
+    "LOD_1_14C",
+    "CLASSIC_1_14D",
+    "LOD_1_14D",
 ]
 
 def main():
@@ -87,17 +98,19 @@ def main():
             if locator_type == "N/A":
                 continue
             elif locator_type == "Offset":
-                locator_type_member_id = "offset"
+                locator_type_member_id = "Mapi_Impl_LocatorType_kOffset"
             elif locator_type == "Ordinal":
-                locator_type_member_id = "ordinal"
+                locator_type_member_id = "Mapi_Impl_LocatorType_kOrdinal"
             elif locator_type == "Decorated Name":
-                locator_type_member_id = "decorated_name"
+                locator_type_member_id = "Mapi_Impl_LocatorType_kDecoratedName"
 
-            locator_value_var_id = f"{library_path[:-4]}_{address_name}_locator_value"
+            if version_name in VERSION_1_14_UP:
+                version_enum_name = version_name
+            else:
+                version_enum_name = f"VERSION_{version_name}"
 
             converted_address_file_text = "\\\n".join((converted_address_file_text,
-                f"union LocatorValue {locator_value_var_id} = {{ .{locator_type_member_id} = {locator_value} }};",
-                f"AddGameAddress(\"{library_path}\", \"{address_name}\", \"{locator_type}\", {locator_value_var_id});"
+                f"{{ {version_enum_name}, L\"{library_path}\", \"{address_name}\", {locator_type_member_id}, {locator_value} }},"
             ))
 
         game_address_table_dict[version_name] = f"{converted_address_file_text}"
