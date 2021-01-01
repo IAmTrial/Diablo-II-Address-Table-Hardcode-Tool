@@ -4,7 +4,7 @@
 
 #include <string_view>
 
-#include "../../../include/cxx/game_version.hpp"
+#include "../../../../include/cxx/game_version.hpp"
 #include "game_address_locator/game_decorated_name_locator.hpp"
 #include "game_address_locator/game_offset_locator.hpp"
 #include "game_address_locator/game_ordinal_locator.hpp"

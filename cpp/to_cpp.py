@@ -38,6 +38,29 @@ VERSIONS = [
     "LOD_1_14D"
 ]
 
+LIBRARY_ID_FROM_LIBRARY_FILES = {
+    "BNClient.dll": "::mapi::DefaultLibrary::kBNClient",
+    "D2Client.dll": "::mapi::DefaultLibrary::kD2Client",
+    "D2CMP.dll": "::mapi::DefaultLibrary::kD2CMP",
+    "D2Common.dll": "::mapi::DefaultLibrary::kD2Common",
+    "D2DDraw.dll": "::mapi::DefaultLibrary::kD2DDraw",
+    "D2Direct3D.dll": "::mapi::DefaultLibrary::kD2Direct3D",
+    "D2Game.dll": "::mapi::DefaultLibrary::kD2Game",
+    "D2GDI.dll": "::mapi::DefaultLibrary::kD2GDI",
+    "D2GFX.dll": "::mapi::DefaultLibrary::kD2GFX",
+    "D2Glide.dll": "::mapi::DefaultLibrary::kD2Glide",
+    "D2Lang.dll": "::mapi::DefaultLibrary::kD2Lang",
+    "D2Launch.dll": "::mapi::DefaultLibrary::kD2Launch",
+    "D2MCPClient.dll": "::mapi::DefaultLibrary::kD2MCPClient",
+    "D2Multi.dll": "::mapi::DefaultLibrary::kD2Multi",
+    "D2Net.dll": "::mapi::DefaultLibrary::kD2Net",
+    "D2Server.dll": "::mapi::DefaultLibrary::kD2Server",
+    "D2Sound.dll": "::mapi::DefaultLibrary::kD2Sound",
+    "D2Win.dll": "::mapi::DefaultLibrary::kD2Win",
+    "Fog.dll": "::mapi::DefaultLibrary::kFog",
+    "Storm.dll": "::mapi::DefaultLibrary::kStorm",
+}
+
 def main():
     if len(sys.argv) < 2:
         print("Missing address directory.")
@@ -84,6 +107,11 @@ def main():
             locator_type = line[2]
             locator_value = line[3]
 
+            if library_path in LIBRARY_ID_FROM_LIBRARY_FILES:
+                library_id = LIBRARY_ID_FROM_LIBRARY_FILES[library_path]
+            else:
+                library_id = f"\"{library_path}\""
+
             if locator_type == "N/A":
                 continue
             elif locator_type == "Offset":
@@ -94,14 +122,12 @@ def main():
                 locator_type_name = "GameDecoratedNameLocator"
                 locator_value = f"\"{locator_value}\""
 
-            locator_value_var_id = f"{library_path[:-4]}_{address_name}_locator_value"
-
             converted_address_file_text = "\\\n".join((converted_address_file_text,
                 f"game_address_table[\"{library_path}\"][\"{address_name}\"] = " +
-                    f"std::make_unique<{locator_type_name}>(\"{library_path}\", {locator_value});"
+                    f"std::make_unique<{locator_type_name}>({library_id}, {locator_value});"
             ))
 
-        game_address_table_dict[version_name] = f"{converted_address_file_text}"
+        game_address_table_dict[version_name] = converted_address_file_text
 
     # Output the file.
     output_text = ""
@@ -110,7 +136,8 @@ def main():
 
     define_text = ""
     for version_name in game_address_table_dict:
-        define_text += "#define ADDRESS_TABLE_{} {} \n".format(version_name, game_address_table_dict[version_name])
+        define_text += "#define ADDRESS_TABLE_{} {} \\\n".format(version_name, game_address_table_dict[version_name])
+        define_text += "break; \n"
 
     with open("./game_address_table_impl.cc", "w") as game_address_table_output:
         game_address_table_output.write(define_text)
