@@ -3,6 +3,8 @@ import json
 import os
 import sys
 
+NAMESPACE = "MAPI_GAME_ADDRESS_TABLE"
+
 VERSIONS = [
     "1_00",
     "1_01",
@@ -38,16 +40,35 @@ VERSIONS = [
     "LOD_1_14D",
 ]
 
-VERSION_1_14_UP = [
-    "CLASSIC_1_14A",
-    "LOD_1_14A",
-    "CLASSIC_1_14B",
-    "LOD_1_14B",
-    "CLASSIC_1_14C",
-    "LOD_1_14C",
-    "CLASSIC_1_14D",
-    "LOD_1_14D",
-]
+LIBRARY_ID_FROM_LIBRARY_FILES = {
+    "BNClient.dll": "D2_DefaultLibrary_kBNClient",
+    "D2Client.dll": "D2_DefaultLibrary_kD2Client",
+    "D2CMP.dll": "D2_DefaultLibrary_kD2CMP",
+    "D2Common.dll": "D2_DefaultLibrary_kD2Common",
+    "D2DDraw.dll": "D2_DefaultLibrary_kD2DDraw",
+    "D2Direct3D.dll": "D2_DefaultLibrary_kD2Direct3D",
+    "D2Game.dll": "D2_DefaultLibrary_kD2Game",
+    "D2GDI.dll": "D2_DefaultLibrary_kD2GDI",
+    "D2GFX.dll": "D2_DefaultLibrary_kD2GFX",
+    "D2Glide.dll": "D2_DefaultLibrary_kD2Glide",
+    "D2Lang.dll": "D2_DefaultLibrary_kD2Lang",
+    "D2Launch.dll": "D2_DefaultLibrary_kD2Launch",
+    "D2MCPClient.dll": "D2_DefaultLibrary_kD2MCPClient",
+    "D2Multi.dll": "D2_DefaultLibrary_kD2Multi",
+    "D2Net.dll": "D2_DefaultLibrary_kD2Net",
+    "D2Server.dll": "D2_DefaultLibrary_kD2Server",
+    "D2Sound.dll": "D2_DefaultLibrary_kD2Sound",
+    "D2Win.dll": "D2_DefaultLibrary_kD2Win",
+    "Fog.dll": "D2_DefaultLibrary_kFog",
+    "Storm.dll": "D2_DefaultLibrary_kStorm",
+}
+
+ENTRY_TEXT_FORMAT = (
+    "{{ \\\n"
+        + "  {library}, {address_name}, \\\n"
+        + "  {address_locator_type}, {address_locator_value} \\\n"
+        + "}},"
+)
 
 def main():
     if len(sys.argv) < 2:
@@ -56,7 +77,7 @@ def main():
 
     # Determine if the supplied address files are valid.
     address_dir_name = sys.argv[1]
-    print(f"Converting {address_dir_name} to C source file...")
+    print(f"Converting {address_dir_name} to source file...")
 
     if not os.path.exists(address_dir_name):
         print(f"Path {address_dir_name} does not exist.")
@@ -66,7 +87,6 @@ def main():
         print(f"Path {address_dir_name} is not a directory.")
         exit()
 
-
     address_files = []
 
     for file in os.listdir(address_dir_name):
@@ -74,7 +94,7 @@ def main():
             address_files.append(file)
 
     # Convert the files into address table info.
-    game_address_table_dict = { v: "" for v in VERSIONS }
+    game_address_table_dict = { v: "0" for v in VERSIONS }
 
     print("Converting the following files:")
     print(address_files)
@@ -92,41 +112,38 @@ def main():
         for line in address_file_lines:
             library_path = line[0]
             address_name = line[1]
-            locator_type = line[2]
-            locator_value = line[3]
+            address_locator_type = line[2]
+            address_locator_value = line[3]
 
-            if locator_type == "N/A":
+            if address_locator_type == "N/A":
                 continue
-            elif locator_type == "Offset":
-                locator_type_member_id = "Mapi_Impl_LocatorType_kOffset"
-            elif locator_type == "Ordinal":
-                locator_type_member_id = "Mapi_Impl_LocatorType_kOrdinal"
-            elif locator_type == "Decorated Name":
-                locator_type_member_id = "Mapi_Impl_LocatorType_kDecoratedName"
+            elif address_locator_type == "Offset":
+                address_locator_type = "Mapi_GameAddressLocatorType_kOffset"
+            elif address_locator_type == "Ordinal":
+                address_locator_type = "Mapi_GameAddressLocatorType_kOrdinal"
+            elif address_locator_type == "Decorated Name":
+                address_locator_type = "Mapi_GameAddressLocatorType_kExportedName"
+                address_locator_value = f"\"{address_locator_value}\""
 
-            if version_name in VERSION_1_14_UP:
-                version_enum_name = version_name
-            else:
-                version_enum_name = f"VERSION_{version_name}"
-
-            converted_address_file_text = "\\\n".join((converted_address_file_text,
-                f"{{ {version_enum_name}, L\"{library_path}\", \"{address_name}\", {locator_type_member_id}, {locator_value} }},"
+            converted_address_file_text = "\\\n".join((
+                converted_address_file_text,
+                ENTRY_TEXT_FORMAT.format(
+                    library=LIBRARY_ID_FROM_LIBRARY_FILES[library_path],
+                    address_name=f"\"{address_name}\"",
+                    address_locator_type=address_locator_type,
+                    address_locator_value=address_locator_value
+                )
             ))
 
         game_address_table_dict[version_name] = f"{converted_address_file_text}"
 
     # Output the file.
-    output_text = ""
-    with open("./game_address_table_impl_template.c", "r") as game_address_table_template:
-        output_text = "".join(game_address_table_template.readlines())
-
     define_text = ""
     for version_name in game_address_table_dict:
-        define_text += "#define ADDRESS_TABLE_{} {} \n".format(version_name, game_address_table_dict[version_name])
+        define_text += f"#define {NAMESPACE}_{version_name} {{{game_address_table_dict[version_name]}}} \n"
 
-    with open("./game_address_table_impl.c", "w") as game_address_table_output:
+    with open("./game_address_table_define.h", "w") as game_address_table_output:
         game_address_table_output.write(define_text)
-        game_address_table_output.write(output_text)
 
 if __name__ == "__main__":
     main()
