@@ -41,26 +41,26 @@ VERSIONS = [
 ]
 
 LIBRARY_ID_FROM_LIBRARY_FILES = {
-    "BNClient.dll": "::mapi::DefaultLibrary::kBNClient",
-    "D2CMP.dll": "::mapi::DefaultLibrary::kD2CMP",
-    "D2Client.dll": "::mapi::DefaultLibrary::kD2Client",
-    "D2Common.dll": "::mapi::DefaultLibrary::kD2Common",
-    "D2DDraw.dll": "::mapi::DefaultLibrary::kD2DDraw",
-    "D2Direct3D.dll": "::mapi::DefaultLibrary::kD2Direct3D",
-    "D2Game.dll": "::mapi::DefaultLibrary::kD2Game",
-    "D2GDI.dll": "::mapi::DefaultLibrary::kD2GDI",
-    "D2GFX.dll": "::mapi::DefaultLibrary::kD2GFX",
-    "D2Glide.dll": "::mapi::DefaultLibrary::kD2Glide",
-    "D2Lang.dll": "::mapi::DefaultLibrary::kD2Lang",
-    "D2Launch.dll": "::mapi::DefaultLibrary::kD2Launch",
-    "D2MCPClient.dll": "::mapi::DefaultLibrary::kD2MCPClient",
-    "D2Multi.dll": "::mapi::DefaultLibrary::kD2Multi",
-    "D2Net.dll": "::mapi::DefaultLibrary::kD2Net",
-    "D2Server.dll": "::mapi::DefaultLibrary::kD2Server",
-    "D2Sound.dll": "::mapi::DefaultLibrary::kD2Sound",
-    "D2Win.dll": "::mapi::DefaultLibrary::kD2Win",
-    "Fog.dll": "::mapi::DefaultLibrary::kFog",
-    "Storm.dll": "::mapi::DefaultLibrary::kStorm",
+    "BNClient.dll": "::d2::DefaultLibrary::kBNClient",
+    "D2CMP.dll": "::d2::DefaultLibrary::kD2CMP",
+    "D2Client.dll": "::d2::DefaultLibrary::kD2Client",
+    "D2Common.dll": "::d2::DefaultLibrary::kD2Common",
+    "D2DDraw.dll": "::d2::DefaultLibrary::kD2DDraw",
+    "D2Direct3D.dll": "::d2::DefaultLibrary::kD2Direct3D",
+    "D2Game.dll": "::d2::DefaultLibrary::kD2Game",
+    "D2GDI.dll": "::d2::DefaultLibrary::kD2GDI",
+    "D2GFX.dll": "::d2::DefaultLibrary::kD2GFX",
+    "D2Glide.dll": "::d2::DefaultLibrary::kD2Glide",
+    "D2Lang.dll": "::d2::DefaultLibrary::kD2Lang",
+    "D2Launch.dll": "::d2::DefaultLibrary::kD2Launch",
+    "D2MCPClient.dll": "::d2::DefaultLibrary::kD2MCPClient",
+    "D2Multi.dll": "::d2::DefaultLibrary::kD2Multi",
+    "D2Net.dll": "::d2::DefaultLibrary::kD2Net",
+    "D2Server.dll": "::d2::DefaultLibrary::kD2Server",
+    "D2Sound.dll": "::d2::DefaultLibrary::kD2Sound",
+    "D2Win.dll": "::d2::DefaultLibrary::kD2Win",
+    "Fog.dll": "::d2::DefaultLibrary::kFog",
+    "Storm.dll": "::d2::DefaultLibrary::kStorm",
 }
 
 ENTRY_TEXT_FORMAT = (
@@ -73,12 +73,12 @@ ENTRY_TEXT_FORMAT = (
 EMPTY_TABLE_TEXT = (
     "::mapi::GameAddressTableEntry( \\\n"
         + "    ::std::tuple( \\\n"
-        + "        static_cast<::mapi::DefaultLibrary>(-1), \\\n"
+        + "        static_cast<::d2::DefaultLibrary>(-1), \\\n"
         + "        \"\" \\\n"
         + "    ), \\\n"
         + "    ::mapi::GameAddressLocator( \\\n"
         + "        ::mapi::GameOffsetLocator( \\\n"
-        + "            static_cast<::mapi::DefaultLibrary>(-1), \\\n"
+        + "            static_cast<::d2::DefaultLibrary>(-1), \\\n"
         + "            0 \\\n"
         + "        ) \\\n"
         + "    ) \\\n"
