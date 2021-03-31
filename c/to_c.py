@@ -42,8 +42,8 @@ VERSIONS = [
 
 LIBRARY_ID_FROM_LIBRARY_FILES = {
     "BNClient.dll": "D2_DefaultLibrary_kBNClient",
-    "D2Client.dll": "D2_DefaultLibrary_kD2Client",
     "D2CMP.dll": "D2_DefaultLibrary_kD2CMP",
+    "D2Client.dll": "D2_DefaultLibrary_kD2Client",
     "D2Common.dll": "D2_DefaultLibrary_kD2Common",
     "D2DDraw.dll": "D2_DefaultLibrary_kD2DDraw",
     "D2Direct3D.dll": "D2_DefaultLibrary_kD2Direct3D",
